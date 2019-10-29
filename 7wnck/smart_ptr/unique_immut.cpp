@@ -50,26 +50,32 @@ unique_immut unique_immut::operator+(unique_immut &unique)
 unique_immut unique_immut::operator-(unique_immut &unique)
 {
 	int a = this->_mgr->ptr->get();
-	this->~unique_immut();
+	this->_mgr->ptr->~Object();
+	this->_mgr->ptr = nullptr;
 	int b = unique._mgr->ptr->get();
-	unique.~unique_immut();
+	unique._mgr->ptr->~Object();
+	unique._mgr->ptr = nullptr;
 	return unique_immut(new Object(a - b));
 }
 unique_immut unique_immut::operator*(unique_immut &unique)
 {
 	int a = this->_mgr->ptr->get();
-	this->~unique_immut();
+	this->_mgr->ptr->~Object();
+	this->_mgr->ptr = nullptr;
 	int b = unique._mgr->ptr->get();
-	unique.~unique_immut();
+	unique._mgr->ptr->~Object();
+	unique._mgr->ptr = nullptr;
 	return unique_immut(new Object(a * b));
 
 }
 unique_immut unique_immut::operator/(unique_immut &unique)
 {
 	int a = this->_mgr->ptr->get();
-	this->~unique_immut();
+	this->_mgr->ptr->~Object();
+	this->_mgr->ptr = nullptr;
 	int b = unique._mgr->ptr->get();
-	this->~unique_immut();
+	unique._mgr->ptr->~Object();
+	unique._mgr->ptr = nullptr;
 	return unique_immut(new Object(a / b));
 }
 Object* unique_immut::operator->()
