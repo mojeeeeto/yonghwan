@@ -1,0 +1,131 @@
+//
+// Created by 김혁진 on 14/10/2019.
+//
+
+#include "shared_ref.h"
+
+namespace ptr {
+shared_ref::shared_ref() {
+    // TODO: Fill it
+    // _mgr의 default 값을 빈 mgr으로 설정
+	this->empty_mgr;
+}
+
+shared_ref::shared_ref(student* student) {
+   	if (this->ptr_map[student])
+	{
+		this->ptr_map[student] = new mgr(student);
+		this->_mgr = new mgr(student);
+	}
+
+	else
+	{
+		mgr* mg = new mgr(student);
+		this->ptr_map[student] = mg;
+		this->_mgr = mg;
+	}
+}
+
+shared_ref::shared_ref(const shared_ref& shared) {
+    // TODO: Fill it
+    // shared_ref 의 _mgr을 자신의 _mgr로 설정
+    // reference가 증가하였으므로 increase 호출
+	this->_mgr = shared._mgr;
+	this->increase();
+}
+
+shared_ref::~shared_ref() {
+    // TODO: Fill it
+    // mgr을 반환하는 release를 호출하게 만듦
+	this->release();
+}
+
+void shared_ref::release() {
+    // TODO: Fill it
+    // _mgr이 nullptr일 경우 아무 작업도 하지 않음
+    // _mgr이 nullptr가 아닐 경우 _mgr의 count를 감소시키고
+    // count가 0인 경우 ptr_map에서 _mgr의 ptr가 key인 value를 nullptr로 설정하고 _mgr을 delete함
+    // ==> student 포인터에 대해 mgr 관리가 끝났음을 알려줌
+	if (this->_mgr != nullptr)
+	{
+		
+		if (this->_mgr->count > 0)
+		{
+			this->_mgr->count--;
+		}
+		this->_mgr = empty_mgr;
+		if (this->_mgr->count == 0)
+		{
+			this->ptr_map[this->_mgr->ptr] = nullptr;
+			this->_mgr->~mgr();
+		}
+
+	}
+}
+
+student *shared_ref::get() const {
+    // TODO: Fill it
+    // _mgr이 nullptr일 경우 nullptr 반환하고
+    // _mgr이 nullptr가 아닐 경우 _mgr의 ptr을 return 하도록 구현
+	if(this->_mgr == nullptr)
+    return nullptr;
+	else
+	{
+		return this->_mgr->ptr;
+	}
+}
+
+void shared_ref::increase() {
+    // TODO: Fill it
+    // _mgr이 nullptr일 경우 아무런 작업도 하지 않음
+    // _mgr이 nullptr가 아닐 경우 _mgr의 count를 증가시킴
+	if (this->_mgr != nullptr)
+	{
+		this->_mgr->count++;
+	}
+}
+
+shared_ref &shared_ref::operator=(const shared_ref &r) {
+	if (this->_mgr->ptr == r._mgr->ptr)
+	{
+		return *this;
+	}
+	else
+	{
+		this->release();
+		this->_mgr = r._mgr;
+		this->increase();
+		
+	}
+}
+
+student *shared_ref::operator->() {
+    // TODO: Fill it
+    // _mgr이 nullptr일 경우 nullptr 반환
+    // _mgr이 nullptr가 아닐 경우 _mgr의 ptr을 반환
+	if (this->_mgr->ptr == nullptr)
+	{
+		return nullptr;
+	}
+	else
+	{
+		return this->_mgr->ptr;
+	}
+}
+
+int shared_ref::count() {
+    // TODO: Fill it
+    // _mgr이 nullptr일 경우 0을 반환
+    // _mgr이 nullptr가 아닐 경우 _mgr의 count를 반환
+
+	if (this->_mgr == nullptr)
+	{
+		return 0;
+	}
+	else
+	{
+		return this->_mgr->count;
+	}
+}
+
+}
